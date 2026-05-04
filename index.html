@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black-Scholes Calculator | Premium Analytics</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Help Button - Top Right -->
+    <div class="help-btn-container" id="helpButtonContainer">
+        <button class="help-btn" id="helpButton" onclick="toggleHelp()">
+            <span class="help-icon">?</span>
+        </button>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-backdrop" id="helpBackdrop" onclick="closeHelp()"></div>
+    <div class="modal help-modal" id="helpModal">
+        <div class="modal-header">
+            <h2>Black-Scholes Model Guide</h2>
+            <button class="modal-close" onclick="closeHelp()">✕</button>
+        </div>
+        <div class="modal-body help-content">
+            <div class="help-section">
+                <h3>What is the Black-Scholes Model?</h3>
+                <p>The Black-Scholes model, also known as the Black-Scholes-Merton (BSM) model, is a mathematical model for pricing options contracts. Developed by Fischer Black, Myron Scholes, and Robert Merton in the early 1970s, it earned them the Nobel Prize in Economics in 1997.</p>
+                <p>The model calculates the theoretical value of European-style options using current stock prices, expected dividends, the option's strike price, expected interest rates, time to expiration, and expected volatility.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>The Formula</h3>
+                <p>The Black-Scholes formula for European options:</p>
+                <div class="formula-highlight">
+                    <p class="formula">Call: C = S·N(d₁) - K·e^(-rT)·N(d₂)</p>
+                    <p class="formula">Put: P = K·e^(-rT)·N(-d₂) - S·N(-d₁)</p>
+                </div>
+                <p>Where:</p>
+                <div class="formula-highlight">
+                    <p class="formula">d₁ = [ln(S/K) + (r + σ²/2)T] / σ√T</p>
+                    <p class="formula">d₂ = d₁ - σ√T</p>
+                </div>
+                <p>N(x) represents the cumulative distribution function of the standard normal distribution.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>Input Parameters</h3>
+                <div class="param-grid">
+                    <div class="param-card">
+                        <h4>S - Spot Price</h4>
+                        <p>The current market price of the underlying asset (stock, commodity, etc.)</p>
+                    </div>
+                    <div class="param-card">
+                        <h4>K - Strike Price</h4>
+                        <p>The predetermined price at which the option can be exercised</p>
+                    </div>
+                    <div class="param-card">
+                        <h4>T - Time to Expiry</h4>
+                        <p>The time remaining until the option expires, expressed in years</p>
+                    </div>
+                    <div class="param-card">
+                        <h4>r - Risk-Free Rate</h4>
+                        <p>The theoretical return on a risk-free investment, typically based on Treasury yields</p>
+                    </div>
+                    <div class="param-card">
+                        <h4>σ - Volatility</h4>
+                        <p>The annualized standard deviation of the underlying asset's returns</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h3>The Greeks Explained</h3>
+                <p>The Greeks are sensitivity measures that describe how an option's price reacts to changes in different variables. Each is named after a Greek letter.</p>
+
+                <div class="greek-grid">
+                    <div class="greek-card">
+                        <h4>Delta (Δ)</h4>
+                        <p><strong>Measures:</strong> Price sensitivity to $1 move in underlying</p>
+                        <p><strong>Call Range:</strong> 0 to 1.0</p>
+                        <p><strong>Put Range:</strong> -1.0 to 0</p>
+                        <p><strong>Meaning:</strong> How much the option price changes for each $1 movement in the stock price.</p>
+                    </div>
+                    <div class="greek-card">
+                        <h4>Gamma (Γ)</h4>
+                        <p><strong>Measures:</strong> Rate of change of Delta</p>
+                        <p><strong>Range:</strong> Always positive</p>
+                        <p><strong>Meaning:</strong> How fast Delta changes. High Gamma means Delta is very sensitive to price moves.</p>
+                    </div>
+                    <div class="greek-card">
+                        <h4>Theta (Θ)</h4>
+                        <p><strong>Measures:</strong> Daily time decay</p>
+                        <p><strong>Typical Sign:</strong> Negative (options lose value over time)</p>
+                        <p><strong>Meaning:</strong> How much value the option loses each day as expiration approaches.</p>
+                    </div>
+                    <div class="greek-card">
+                        <h4>Vega (ν)</h4>
+                        <p><strong>Measures:</strong> Sensitivity to 1% volatility change</p>
+                        <p><strong>Range:</strong> Positive for both calls and puts</p>
+                        <p><strong>Meaning:</strong> How much the option price changes for each 1% change in implied volatility.</p>
+                    </div>
+                    <div class="greek-card">
+                        <h4>Rho (ρ)</h4>
+                        <p><strong>Measures:</strong> Sensitivity to 1% interest rate change</p>
+                        <p><strong>Call Sign:</strong> Positive</p>
+                        <p><strong>Put Sign:</strong> Negative</p>
+                        <p><strong>Meaning:</strong> How much the option price changes for each 1% change in interest rates.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h3>Implied Volatility (IV)</h3>
+                <p>Implied volatility is the market's forward-looking expectation of how much a stock's price will fluctuate. Unlike historical volatility (which looks at past price movements), implied volatility is derived from the option's current market price.</p>
+                <p><strong>How it's calculated:</strong> Using the Black-Scholes model, we input all known variables (S, K, T, r) plus the current market price of the option, then solve for the volatility (σ) that would produce that price.</p>
+                <p><strong>High IV:</strong> Market expects large price swings → Higher option premiums</p>
+                <p><strong>Low IV:</strong> Market expects stability → Lower option premiums</p>
+                <p>Use the Implied Volatility Calculator in this app to find the IV when you know the market price of an option.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>How to Use This Calculator</h3>
+                <p><strong>1. Basic Pricing:</strong> Enter S, K, T, r, and σ in the calculator, then click "Calculate" to see call and put prices with all Greeks.</p>
+                <p><strong>2. Implied Volatility:</strong> If you know an option's market price, use the IV Calculator section to work backwards and find the implied volatility.</p>
+                <p><strong>3. Sensitivity Charts:</strong> Use the "Generate Charts" button to visualize how prices and Greeks change across different spot prices.</p>
+                <p><strong>4. Interpretation:</strong> Use the Greeks to understand your risk exposure:</p>
+                <ul style="color: var(--text-secondary); line-height: 1.8; margin-left: 20px;">
+                    <li>Delta tells you your directional exposure</li>
+                    <li>Gamma tells you how stable your Delta is</li>
+                    <li>Theta tells you how much value you lose each day</li>
+                    <li>Vega tells you your exposure to volatility changes</li>
+                    <li>Rho tells you your sensitivity to interest rate changes</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>Important Assumptions & Limitations</h3>
+                <p>The Black-Scholes model makes several key assumptions:</p>
+                <ul style="color: var(--text-secondary); line-height: 1.8; margin-left: 20px;">
+                    <li>No dividends are paid during the option's life</li>
+                    <li>Markets are efficient (no arbitrage opportunities)</li>
+                    <li>No transaction costs or taxes</li>
+                    <li>Risk-free rate and volatility are constant</li>
+                    <li>Returns are normally distributed (lognormal)</li>
+                    <li>Only applies to European options (can only exercise at expiration)</li>
+                </ul>
+                <p style="margin-top: 15px; color: var(--gold);"><strong>Note:</strong> Real markets often violate these assumptions, which is why implied volatility varies across strike prices (volatility smile/skew).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="gradient-text">Black-Scholes</h1>
+            <p class="hero-subtitle">Premium Option Pricing Model</p>
+            <p class="hero-description">
+                Calculate European option prices, Greeks, and implied volatility with our advanced Black-Scholes-Merton model.
+            </p>
+            <div class="hero-features">
+                <div class="feature">
+                    <span class="feature-icon">◆</span>
+                    <span>Real-time Pricing</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">◆</span>
+                    <span>All Greeks</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">◆</span>
+                    <span>Implied Volatility</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">◆</span>
+                    <span>Interactive Charts</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-overlay"></div>
+    </div>
+
+    <!-- Main Content - Charts Section -->
+    <div class="container">
+        <div class="card charts-section">
+            <h2>Sensitivity Analysis</h2>
+            <p class="section-description">Generate interactive charts to visualize how option prices and Greeks change with underlying price movements.</p>
+            <div class="chart-controls">
+                <label>Option Type:</label>
+                <select id="chartOptionType" class="select-styled">
+                    <option value="call">Call Option</option>
+                    <option value="put">Put Option</option>
+                </select>
+                <button class="btn btn-gold" onclick="generateCharts()">
+                    <span class="btn-icon">📊</span> Generate Charts
+                </button>
+            </div>
+            <div id="priceChart" class="chart"></div>
+            <div id="deltaChart" class="chart"></div>
+            <div id="gammaChart" class="chart"></div>
+            <div id="thetaChart" class="chart"></div>
+            <div id="vegaChart" class="chart"></div>
+            <div id="rhoChart" class="chart"></div>
+        </div>
+
+        <div class="card info-section">
+            <h2>About Black-Scholes Model</h2>
+            <p>The Black-Scholes model is a mathematical model for pricing an options contract. It calculates the theoretical value of European-style options using:</p>
+            <div class="formula-box">
+                <p class="formula">C = S·N(d₁) - K·e^(-rT)·N(d₂)</p>
+                <p class="formula">P = K·e^(-rT)·N(-d₂) - S·N(-d₁)</p>
+            </div>
+            <p>Where d₁ and d₂ are calculated based on spot price, strike price, time to expiry, risk-free rate, and volatility.</p>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab-container" id="fabContainer">
+        <button class="fab" id="fabButton" onclick="toggleCalculator()">
+            <svg class="calc-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4h16v16H4z" stroke="currentColor" stroke-width="2"/>
+                <path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z" fill="currentColor"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Calculator Modal -->
+    <div class="modal-backdrop" id="modalBackdrop" onclick="closeCalculator()"></div>
+    <div class="modal" id="calculatorModal">
+        <div class="modal-header">
+            <h2>Option Calculator</h2>
+            <button class="modal-close" onclick="closeCalculator()">✕</button>
+        </div>
+        <div class="modal-body">
+            <!-- Calculator Forms -->
+            <div class="grid">
+                <div class="card glass">
+                    <h3>Option Pricing</h3>
+                    <form id="calcForm">
+                        <div class="form-group">
+                            <label>Spot Price (S)</label>
+                            <input type="number" step="0.01" name="S" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Strike Price (K)</label>
+                            <input type="number" step="0.01" name="K" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time to Expiry (T) years</label>
+                            <input type="number" step="0.01" name="T" value="1" min="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Risk-Free Rate (r) %</label>
+                            <input type="number" step="0.001" name="r" value="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Volatility (σ) %</label>
+                            <input type="number" step="0.01" name="sigma" value="25" required>
+                        </div>
+                        <button type="submit" class="btn btn-gold">Calculate</button>
+                    </form>
+                </div>
+
+                <div class="card glass">
+                    <h3>Results</h3>
+                    <div id="results" style="display:none;">
+                        <h4>Call Option</h4>
+                        <div class="results-grid" id="callResults"></div>
+                        <h4>Put Option</h4>
+                        <div class="results-grid" id="putResults"></div>
+                    </div>
+                    <div id="error" class="error" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- Implied Volatility -->
+            <div class="card glass" style="margin-top: 20px;">
+                <h3>Implied Volatility Calculator</h3>
+                <form id="ivForm">
+                    <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="form-group">
+                            <label>Market Price</label>
+                            <input type="number" step="0.01" name="price" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Spot Price (S)</label>
+                            <input type="number" step="0.01" name="S" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Strike Price (K)</label>
+                            <input type="number" step="0.01" name="K" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time to Expiry (T) years</label>
+                            <input type="number" step="0.01" name="T" value="1" min="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Risk-Free Rate (r) %</label>
+                            <input type="number" step="0.001" name="r" value="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Option Type</label>
+                            <select name="option_type" class="select-styled">
+                                <option value="call">Call</option>
+                                <option value="put">Put</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-gold">Calculate IV</button>
+                </form>
+                <div id="ivResult" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bs_model.js"></script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>
